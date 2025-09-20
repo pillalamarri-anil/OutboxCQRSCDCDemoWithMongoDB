@@ -12,13 +12,13 @@ import java.time.Instant;
 @Setter
 
 @org.springframework.data.mongodb.core.mapping.Document(collection = "outbox")
-public class OutboxMessage {
+public class OutboxMessage<T> {
     @Id
     private String id;
     private String topic;         // Kafka topic
     private String aggregateId;
     private String eventType;
-    private Document payload;
+    private T payload;
     private Instant createdAt;
     private boolean processed = false;  // mark after publish
     private Instant processedAt;

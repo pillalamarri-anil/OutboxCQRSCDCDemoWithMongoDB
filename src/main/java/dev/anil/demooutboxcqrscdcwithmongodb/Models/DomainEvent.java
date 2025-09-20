@@ -11,12 +11,12 @@ import java.time.Instant;
 @Setter
 
 @org.springframework.data.mongodb.core.mapping.Document(collection = "events")
-public class DomainEvent {
+public class DomainEvent<T> {
 
     @Id
     private String id;
     private String aggregateId;
     private String type;
     private Instant occuredAt;
-    private Document payLoad;
+    private T payLoad;
 }

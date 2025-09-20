@@ -1,6 +1,7 @@
 package dev.anil.demooutboxcqrscdcwithmongodb.Services;
 
 import dev.anil.demooutboxcqrscdcwithmongodb.Models.DomainEvent;
+import dev.anil.demooutboxcqrscdcwithmongodb.Models.OrderRead;
 import dev.anil.demooutboxcqrscdcwithmongodb.Models.OutboxMessage;
 import dev.anil.demooutboxcqrscdcwithmongodb.Repositories.DomainEventRepo;
 import dev.anil.demooutboxcqrscdcwithmongodb.Repositories.OutboxMessageRepo;
@@ -29,19 +30,19 @@ public class OrderCommandService {
 
     @Transactional  // MongoTransactionManager ensures both saves are atomic
     public void handleCreateOrder(String orderId, Map<String,Object> payload) {
-        DomainEvent event = new DomainEvent();
+        DomainEvent<OrderRead> event = new DomainEvent();
         event.setAggregateId(orderId);
         event.setType("OrderCreated");
         event.setOccuredAt(Instant.now());
-        event.setPayLoad(new Document(payload));
+        event.setPayLoad(new OrderRead());
 
         eventRepo.save(event);
 
-        OutboxMessage outbox = new OutboxMessage();
+        OutboxMessage<OrderRead> outbox = new OutboxMessage();
         outbox.setTopic("orders-events");
         outbox.setAggregateId(orderId);
         outbox.setEventType("OrderCreated");
-        outbox.setPayload(new Document(payload));
+        outbox.setPayload(event.getPayLoad());
         outbox.setCreatedAt(Instant.now());
 
         outboxRepo.save(outbox);
